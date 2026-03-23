@@ -18,7 +18,7 @@ const ResultCards = ({ results, productName, fragility, weightGrams }) => {
           Top 5 recommendations for <span className="text-eco-dark">{productName}</span>
         </h2>
         <p className="mt-1 text-sm text-slate-600">
-          Weight: {Number(weightGrams).toFixed(2)} grams | Fragility (auto): {fragility}
+          Weight: {Number(weightGrams).toFixed(2)} grams
         </p>
       </div>
 

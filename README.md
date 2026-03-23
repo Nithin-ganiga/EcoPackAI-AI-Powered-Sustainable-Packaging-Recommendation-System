@@ -21,6 +21,53 @@ It combines:
 - backend: FastAPI API, ML inference pipeline, rule engine, MySQL access
 - frontend: React UI with search form, autocomplete, result cards, loading and error states
 
+## Complete Project Workflow
+
+```mermaid
+flowchart TD
+  A[User opens React app] --> B[SearchForm captures product name and weight]
+  B --> C[Frontend API service sends POST /api/recommend]
+  B --> D[Frontend API service sends GET /api/autocomplete]
+
+  subgraph OneTimeSetup[One-time setup and data preparation]
+    S1[Run backend/run_import.py] --> S2[Create materials table if missing]
+    S2 --> S3[Import backend/materials.csv into MySQL materials]
+  end
+
+  subgraph AppStartup[Backend startup lifecycle]
+    T1[Start FastAPI with uvicorn] --> T2[Load ML models from backend/models]
+    T1 --> T3[Test MySQL connection]
+    T1 --> T4[Create search_logs table if missing]
+  end
+
+  subgraph RecommendationFlow[Recommendation request flow]
+    C --> E[FastAPI validate input]
+    E --> F[Query materials by packaged_item match]
+    F --> G{Any product-specific candidates?}
+    G -- Yes --> H[Use matched candidates]
+    G -- No --> I[Fallback to all unique materials]
+    H --> J[ML inference: predicted cost CO2 tier]
+    I --> J
+    J --> K[Rule engine: weight filter fragility filter scoring]
+    K --> L[Sort dedupe keep top 5]
+    L --> M[Build response fields and why_recommended]
+    M --> N[Save top result in search_logs]
+    N --> O[Return JSON response to frontend]
+  end
+
+  subgraph AutocompleteFlow[Autocomplete request flow]
+    D --> P[FastAPI trims query]
+    P --> Q{Query empty?}
+    Q -- Yes --> R[Return empty suggestion list]
+    Q -- No --> U[Query distinct packaged_item values]
+    U --> V[Return up to 8 suggestions]
+  end
+
+  O --> W[App switches to results view]
+  W --> X[Render ResultCards with top recommendations]
+  V --> Y[Render autocomplete suggestions in search form]
+```
+
 ## Prerequisites
 
 - Python 3.10+
