@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+backend/venv/
+frontend/venv/
+
+# Environment files
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+
+# Node
+node_modules/
+**/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend build outputs
+frontend/build/
+frontend/.cache/
+frontend/.parcel-cache/
+
+# Logs
+*.log
+
+# ML artifacts and large binaries (optional; remove if you want versioned models)
+*.pkl
+*.joblib
+*.h5
+*.onnx
