@@ -20,7 +20,6 @@ const ResultCards = ({ results, productName, fragility, weightGrams }) => {
         <p className="mt-1 text-sm text-slate-600">
           Weight: {Number(weightGrams).toFixed(2)} grams | Fragility (auto): {fragility}
         </p>
-        <p className="mt-1 text-xs text-slate-500">Total candidates analyzed: {results.total_candidates}</p>
       </div>
 
       <div className="rounded-2xl border border-slate-300 bg-slate-50 p-4 text-slate-800 shadow-sm">
