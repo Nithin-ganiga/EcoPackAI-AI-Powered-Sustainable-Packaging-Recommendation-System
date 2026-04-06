@@ -1,6 +1,7 @@
 // This file shows the recommendation summary and arranges ranked material cards so users can quickly compare top suggestions.
 
 import MaterialCard from "./MaterialCard";
+import DownloadReportButtons from "./DownloadReportButtons";
 
 const ResultCards = ({ results, productName, fragility, weightGrams }) => {
   const recommendations = results?.recommendations || [];
@@ -21,6 +22,13 @@ const ResultCards = ({ results, productName, fragility, weightGrams }) => {
           Weight: {Number(weightGrams).toFixed(2)} grams
         </p>
       </div>
+
+      <DownloadReportButtons
+        results={results}
+        productName={productName}
+        weightGrams={weightGrams}
+        fragility={fragility}
+      />
 
       <div className="rounded-2xl border border-slate-300 bg-slate-50 p-4 text-slate-800 shadow-sm">
         <p className="text-sm font-bold">Best Pick: {bestPick.material_name}</p>

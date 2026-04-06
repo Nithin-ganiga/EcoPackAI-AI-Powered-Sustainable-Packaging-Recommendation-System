@@ -36,3 +36,32 @@ export const getAutocomplete = async (query) => {
     return [];
   }
 };
+
+export const getDashboardSummary = async () => {
+  const response = await api.get("/api/dashboard/summary");
+  return response.data;
+};
+
+export const getCO2Analysis = async () => {
+  const response = await api.get("/api/dashboard/co2-analysis");
+  return response.data;
+};
+
+export const getCostAnalysis = async () => {
+  const response = await api.get("/api/dashboard/cost-analysis");
+  return response.data;
+};
+
+export const exportPDF = async () => {
+  const response = await api.get("/api/dashboard/export/pdf", {
+    responseType: "blob"
+  });
+  return response.data;
+};
+
+export const exportExcel = async () => {
+  const response = await api.get("/api/dashboard/export/excel", {
+    responseType: "blob"
+  });
+  return response.data;
+};

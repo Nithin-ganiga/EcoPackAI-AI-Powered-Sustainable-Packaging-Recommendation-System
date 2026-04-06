@@ -1,9 +1,11 @@
 """This file starts and configures the FastAPI server, exposes health and recommendation endpoints, and coordinates database loading, ML prediction, and rule-based ranking so the API can return clean packaging recommendations to the frontend."""
 
 from typing import List
+from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from database import (
     create_search_logs_table,
@@ -13,12 +15,16 @@ from database import (
     save_search_log,
     test_connection,
 )
+from dashboard import router as dashboard_router
 import recommender
 from rule_engine import apply_rules
-from schemas import MaterialRecommendation, RecommendRequest, RecommendResponse
+from schemas import MaterialRecommendation, RecommendRequest, RecommendResponse, ReportRequest
+import report_generator
 
 
 app = FastAPI(title="EcoPackAI API", version="3.0.0")
+
+app.include_router(dashboard_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -170,3 +176,51 @@ def autocomplete(q: str = Query("", min_length=0, max_length=120)) -> dict:
 
     suggestions = get_autocomplete_suggestions(query)
     return {"suggestions": suggestions}
+
+
+@app.post("/api/report/pdf")
+def generate_pdf_report(report_data: ReportRequest):
+    """Generate and return a PDF report with recommendation details."""
+    try:
+        pdf_bytes = report_generator.generate_pdf_report(report_data)
+
+        # Create filename with product name and date
+        product_name_clean = (
+            report_data.product_name.lower()
+            .replace(" ", "_")
+            .replace("/", "_")
+            .replace("\\", "_")
+        )
+        filename = f"EcoPackAI_{product_name_clean}_{datetime.now().strftime('%Y-%m-%d')}.pdf"
+
+        return StreamingResponse(
+            iter([pdf_bytes]),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating PDF report: {str(e)}")
+
+
+@app.post("/api/report/excel")
+def generate_excel_report(report_data: ReportRequest):
+    """Generate and return an Excel report with recommendation details."""
+    try:
+        excel_bytes = report_generator.generate_excel_report(report_data)
+
+        # Create filename with product name and date
+        product_name_clean = (
+            report_data.product_name.lower()
+            .replace(" ", "_")
+            .replace("/", "_")
+            .replace("\\", "_")
+        )
+        filename = f"EcoPackAI_{product_name_clean}_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+
+        return StreamingResponse(
+            iter([excel_bytes]),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating Excel report: {str(e)}")

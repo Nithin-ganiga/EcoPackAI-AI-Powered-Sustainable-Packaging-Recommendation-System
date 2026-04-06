@@ -45,3 +45,11 @@ class RecommendResponse(BaseModel):
     total_candidates: int
     recommendations: List[MaterialRecommendation] = Field(default_factory=list, max_length=5)
     message: str
+
+
+class ReportRequest(BaseModel):
+    product_name: str = Field(..., description="Name of product that was searched")
+    product_weight_grams: float = Field(..., gt=0, description="Weight of product in grams")
+    fragility: str = Field(..., description="Fragility level: low, medium, or high")
+    generated_at: str = Field(..., description="ISO format datetime string when report was generated")
+    recommendations: List[MaterialRecommendation] = Field(..., max_length=5, description="List of 5 recommendations")
